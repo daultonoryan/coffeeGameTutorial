@@ -2,32 +2,65 @@ canvas = $("#game-screen")[0]
 ctx = canvas.getContext("2d") 
 x = canvas.width / 2
 y = canvas.height - 30
-cy = 2
+cy = -2
 cx = 2
+paddleWidth = 75
+paddleHeight = 10
+paddleX = (canvas.width - paddleWidth) / 2
 ballRadius = 10
+rightPressed = false
+leftPressed = false
+
+keyDownHandler = (e) ->
+                  if e.keyCode == 39
+                    rightPressed = true
+                  else if e.keyCode == 37
+                    leftPressed = true
+
+keyUpHandler = (e) ->
+                  if e.keyCode == 39
+                    rightPressed = false
+                  else if e.keyCode == 37
+                    leftPressed = false
+
+document.addEventListener("keydown", keyDownHandler, false)
+document.addEventListener("keyup", keyUpHandler, false)
 
 wallCollideCheck = () ->
                   if y + cy < ballRadius || y + cy > canvas.height - ballRadius
                     cy = -cy
                   else if x + cx < ballRadius || x + cx > canvas.width - ballRadius
-                    cx = -cx
-            
+                    cx = -cx; null
 
-drawBall = () -> 
+
+drawBall = () ->
                   ctx.beginPath()
                   ctx.arc(x, y, ballRadius, 0, Math.PI*2)
-                  ctx.fillStyle = "blue" 
-                  ctx.fill() 
-                  ctx.closePath(); null
+                  ctx.fillStyle = "blue"
+                  ctx.fill()
+                  ctx.closePath();null
+
+drawPaddle = () ->
+                  ctx.beginPath()
+                  ctx.rect(paddleX, canvas.height-paddleHeight, paddleWidth, paddleHeight)
+                  ctx.fillStyle = "blue"
+                  ctx.fill()
+                  ctx.closePath();null
 
 draw = () ->
                   ctx.clearRect(0, 0, canvas.width, canvas.height)
                   drawBall()
-                  wallCollideCheck()
-                  y += cy
-                  x += cx      
+                  drawPaddle()
 
-$(document).ready(()-> 
-                  setInterval(draw, 30)
+                  wallCollideCheck()
+                  if rightPressed && paddleX < canvas.width-paddleWidth
+                    paddleX += 7
+                  else if leftPressed && paddleX > 0
+                    paddleX -= 7
+                  console.log(paddleX)
+                  y += cy
+                  x += cx; null
+
+$(document).ready(()->
+                  setInterval(draw, 30); null
 )
-          
